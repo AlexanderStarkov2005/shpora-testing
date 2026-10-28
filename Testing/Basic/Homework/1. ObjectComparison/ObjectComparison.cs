@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 
@@ -15,10 +16,9 @@ public class ObjectComparison
 
         var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
             new Person("Vasili III of Russia", 28, 170, 60, null));
-
+        
         actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-            .Excluding(p => p.Id)
-            .Excluding(p => p.Parent.Id));
+            .Excluding((IMemberInfo member) => member.Name == nameof(Person.Id)));
     }
 
     [Test]
