@@ -27,7 +27,11 @@ public class NumberValidatorTests
     [TestCase(3, 2, true, "0x1F", TestName = "WhenHexNotation")]
     public void IsValidNumber_ShouldBeFalse(int precision, int scale, bool onlyPositive, string test)
     {
-        new NumberValidator(precision, scale, onlyPositive).IsValidNumber(test).Should().BeFalse();
+        var validator = new NumberValidator(precision, scale, onlyPositive);
+        
+        var result = validator.IsValidNumber(test);
+        
+        result.Should().BeFalse();
     }
     
     [TestCase(17, 2, true, "00.00", TestName = "WhenLeadingZeros")]
@@ -40,7 +44,11 @@ public class NumberValidatorTests
     [TestCase(7, 3, true, "+430.313", TestName = "WhenPlusButNegativeNotAllowed")]
     public void IsValidNumber_ShouldBeTrue(int precision, int scale, bool onlyPositive, string test)
     {
-        new NumberValidator(precision, scale, onlyPositive).IsValidNumber(test).Should().BeTrue();
+        var validator = new NumberValidator(precision, scale, onlyPositive);
+        
+        var result = validator.IsValidNumber(test);
+        
+        result.Should().BeTrue();
     }
     
     [TestCase(1, 0, TestName = "WhenMinimalValid")]
