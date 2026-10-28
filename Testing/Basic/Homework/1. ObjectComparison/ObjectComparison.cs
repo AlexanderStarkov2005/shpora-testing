@@ -20,6 +20,35 @@ public class ObjectComparison
         actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
             .Excluding((IMemberInfo member) => member.Name == nameof(Person.Id)));
     }
+    
+    [Test]
+    [Description("Проверка сравнения объектов при циклических зависимостях")]
+    public void CheckCyclicDependency()
+    {
+        var tsarParent1 = new Person("Vasili III of Russia", 28, 170, 60, null);
+        
+        var tsar1 = new Person("Ivan IV The Terrible", 54, 170, 70,
+            tsarParent1);
+        
+        tsarParent1.Parent =  tsar1;
+        
+        var tsarParent2 = new Person("Vasili III of Russia", 28, 170, 60, null);
+        
+        var tsar2 = new Person("Ivan IV The Terrible", 54, 170, 70,
+            tsarParent2);
+        
+        tsarParent2.Parent = tsar2;
+        
+        //FluentAssertions обнаружит циклическую зависимость при сравнении и не засчитает тест
+        tsar1.Should().NotBeEquivalentTo(tsar2, options => options
+            .Excluding((IMemberInfo member) => member.Name == nameof(Person.Id)));
+        
+        //но можно заставить игнорировать циклические зависимости, FluentAssertions будет пропускать
+        //уже проверенные объекты, и при совпадении остальных полей тест пройдется
+        tsar1.Should().BeEquivalentTo(tsar2, options => options
+            .Excluding((IMemberInfo member) => member.Name == nameof(Person.Id))
+            .IgnoringCyclicReferences());
+    }
 
     [Test]
     [Description("Альтернативное решение. Какие у него недостатки?")]
